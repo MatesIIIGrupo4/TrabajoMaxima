@@ -704,7 +704,67 @@ Dado el problema de contorno...
 
 
 /* [wxMaxima: input   start ] */
-load("C:/Users/vlad1/Desktop/TrabajoM3Grupo4/Dif_Finitas.mac")$
+calculamatriz(funp,funq,a,b,n):=block(
+    [h],
+    h:(b-a)/n,
+    A:zeromatrix(n+1,n+1),
+    A[1,1]:1,
+    A[n+1,n+1]:1,
+    for i:2 thru n do (
+        A[i,i]:1+(h^2/2)*funq(a+(i-1)*h),
+        A[i,i-1]:-(1/2)*(1+(h/2)*funp(a+(i-1)*h)),
+        A[i,i+1]:-(1/2)*(1-(h/2)*funp(a+(i-1)*h))
+    ),
+    A
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+calculatermind(funr,a,b,n,alfa,beta):=block(
+    [h],
+    h:(b-a)/n,
+    R:zeromatrix(1,n+1),
+    R[1,1]:alfa,
+    R[1,n+1]:beta,
+    for i:2 thru n do R[1,i]:(h^2/2)*funr(a+(i-1)*h),
+    R
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+restridiag(A,B):=block(
+    [c],
+    n:length(A),
+    for i:2 thru n do (
+        c:-A[i,i-1]/A[i-1,i-1],
+        A[i,i]:A[i,i]+c*A[i-1,i],
+        B[1,i]:B[1,i]+c*B[1,i-1],
+        y[n]:B[1,n]/A[n,n]),
+    for i:n-1 thru 1 step -1 do (
+        y[i]:(B[1,i]-A[i,i+1]*y[i+1])/A[i,i]
+    ),
+    lista:makelist(y[i], i,1,n),
+    lista
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+calculamatrizupwind(funp,funq,a,b,n):=block(
+    [h],
+    h:(b-a)/n,
+    A:zeromatrix(n+1,n+1),
+    A[1,1]:1,
+    A[n+1,n+1]:1,
+    for i:2 thru n do (
+        A[i,i]:1+(h/2)*abs(funp(a+(i-1)*h))+((h^2)/2)*funq(a+(i-1)*h),
+        A[i,i-1]:-(1/2)-(h/4)*(abs(funp(a+(i-1)*h))+funp(a+(i-1)*h)),
+        A[i,i+1]:-(1/2)+(h/4)*(funp(a+(i-1)*h)-abs(funp(a+(i-1)*h)))
+    ),
+    A
+)$
 /* [wxMaxima: input   end   ] */
 
 
@@ -763,9 +823,14 @@ numer:true;
 /* [wxMaxima: input   end   ] */
 
 
-/* [wxMaxima: input   start ] */
-load("C:/Users/celia/Desktop/2º cuatrimestre/Matemáticas III/Trabajos/trabajo 2/TrabajoM3Grupo4/Dif_Finitas.mac")$
-/* [wxMaxima: input   end   ] */
+/* [wxMaxima: subsect start ]
+Método upwind
+   [wxMaxima: subsect end   ] */
+
+
+/* [wxMaxima: comment start ]
+N:10
+   [wxMaxima: comment end   ] */
 
 
 /* [wxMaxima: subsect start ]
@@ -906,16 +971,6 @@ Máximo error:
 /* [wxMaxima: input   start ] */
 maxerror3:apply(max,error33);
 /* [wxMaxima: input   end   ] */
-
-
-/* [wxMaxima: subsect start ]
-Método upwind
-   [wxMaxima: subsect end   ] */
-
-
-/* [wxMaxima: comment start ]
-N:10
-   [wxMaxima: comment end   ] */
 
 
 /* [wxMaxima: input   start ] */
